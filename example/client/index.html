@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <script src="js/jquery.js"></script>
+        <script src="js/jquery.form.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/a.css">
+    </head>
+    <body >
+        <div style="float:left">	
+        <p>hihihi </p>
+        <img id = 'avatar' src= 'image/1.png'/>
+        <form id = 'img' enctype="multipart/form-data" method="post">
+        	<input type="file" name="upload">
+        	<input type="submit" value="Upload file" />
+        </form>
+        <label>subject:</label>
+        <input type="text" name="name" id = "name" /><br><br>
+        <label>message:</label>
+        <textarea cols="30" rows="4" name="message" id="message"></textarea><br>
+        <button type="submit" id = "send">SEND</button>
+        <button type="submit" id = "list">LIST</button>
+        </div>
+        <div style="float:left;width:400px">
+        <label >list:</label>
+        <div id = 'messageList'></div>
+        </div>
+        <div style="float:left">
+        <label>subject:</label>
+        <input type="text" name="id" id = "Eid" hidden />
+        <input type="text" name="name" id = "Ename" /><br><br>
+        <label>message:</label>
+        <textarea cols="30" rows="4" name="message" id="Emessage"></textarea><br>
+        <button type="submit" id = "edit">EDIT</button>
+
+        </div>
+    </body>
+</html>
+<script type="text/javascript">
+$(function () {
+      var string = '';
+            $.ajax({
+                type: "GET",
+                url: "/list",
+                'success' : function(result, textStatus, jqXHR) {
+                   for(var i = 0 ; i < result['data'].length ; i++){	 
+                   	string = string+ '<label>'+result['data'][i]['name']+'</label><button onclick = "info(\''+result['data'][i]['_id']+'\')">info</button ><button onclick = "remove(\''+result['data'][i]['_id']+'\')">delete</button>'
+                   	
+                    }
+                    document.getElementById('messageList').innerHTML = string;
+                }
+               
+            });    
+});     
+document.getElementById("send").onclick = function() {
+	console.log('click');
+	var name = document.getElementById('name').value;
+	var message = document.getElementById('message').value;
+	var params = {
+            	    "name":name,
+                  "message":message,
+               };
+            $.ajax({
+                type: "POST",
+                contentType : 'application/json', 
+                url: "/add",
+                dataType : 'json', 
+                data: params,
+                'success' : function(result, textStatus, jqXHR) {
+                   document.getElementById("list").click();
+                }
+               
+            });    
+}
+ document.getElementById("list").onclick = function() {
+ 	var string = '';
+            $.ajax({
+                type: "GET",
+                url: "/list",
+                'success' : function(result, textStatus, jqXHR) {
+                   for(var i = 0 ; i < result['data'].length ; i++){	 
+                   	string = string+ '<label>'+result['data'][i]['name']+'</label><button onclick = "info(\''+result['data'][i]['_id']+'\')">info</button ><button onclick = "remove(\''+result['data'][i]['_id']+'\')">delete</button>'
+                   	
+                    }
+                    document.getElementById('messageList').innerHTML = string;
+                }
+               
+            });    
+} 
+document.getElementById("edit").onclick = function() {
+	var name = document.getElementById('Ename').value;
+	var message = document.getElementById('Emessage').value;
+	var id = document.getElementById('Eid').value;
+	var params = {
+	    'id':id,
+            	    "name":name,
+                  "message":message,
+               };
+            $.ajax({
+                type: "post",
+                data:params,
+                url: "/edit",
+                'success' : function(result, textStatus, jqXHR) {
+                   document.getElementById("list").click();
+                }
+               
+            });    
+} 
+function info(id){
+	console.log(id);
+	var params = {
+            	    "id":id,
+               };
+	$.ajax({
+                type: "POST",
+                data:params,
+                url: "/info",
+                'success' : function(result, textStatus, jqXHR) {
+                    document.getElementById('Ename').value = result['data'][0]['name'];
+                    document.getElementById('Emessage').value = result['data'][0]['message']; 
+                    document.getElementById('Eid').value = result['data'][0]['_id']; 	
+                }
+               
+            });    
+}
+function remove(id){
+	console.log(id);
+	var params = {
+            	    "id":id,
+               };
+	$.ajax({
+                type: "POST",
+                data:params,
+                url: "/remove",
+                'success' : function(result, textStatus, jqXHR) {
+                	document.getElementById("list").click();
+                }
+               
+            });    
+}
+        $("#img").submit(function (e) {
+            e.preventDefault();
+            var options = {
+                url: "/upload",
+                type: "post",
+                dataType: "json",
+                success: function (resp) {   
+                	document.getElementById('avatar').src = resp['data'];
+                },
+                fail: function (resp) {                  
+                }
+            };
+            $("#img").ajaxSubmit(options);
+            return false;
+        });
+</script>
