@@ -9,7 +9,8 @@ If you dont want to use express, koa and sails ...,
 just want a simple example to create website quickly.
 This will be a good choice.
 
-How to use 
+How to use
+
 0. sudo apt-get install nodejs
 
 1. Just put your file in right folder.
