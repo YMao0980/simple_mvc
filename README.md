@@ -22,5 +22,7 @@ How to use<br />
 
 3. If you want to build dynamic website , go to server folder and add code.
 
+There is more example in example.<br />
+
 if you familiar with Django or CodeIgniter , you will like it .
 
